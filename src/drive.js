@@ -10,7 +10,7 @@ const SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly']
 const TOKEN_PATH = 'token.json'
 
 // Load client secrets from a local file
-fs.readFile('oauth2.keys.json', (err, content) => {
+fs.readFile('credentials.json', (err, content) => {
     if (err) return console.log('Error loading client secret file: ', err)
     // Authorize a client with credentials, then call the Google Drive API
     authorize(JSON.parse(content), listFiles)
@@ -44,16 +44,16 @@ function authorize(credentials, callback) {
 function getAccessToken(oAuth2Client, callback) {
     const authUrl = oAuth2Client.generateAuthUrl({
         access_type: 'offline',
-        scope: SCOPES,
+        scope: SCOPES
     })
     console.log('Authorize this app by visiting this url:', authUrl)
     const rl = readline.createInterface({
         input: process.stdin,
-        output: process.stdout,
+        output: process.stdout
     })
     rl.question('Enter the code from that page here: ', (code) => {
         rl.close()
-        oAuth2Client.getAccessToken(code, (err, token) => {
+        oAuth2Client.getToken(code, (err, token) => {
             if (err) return console.error('Error retrieving access token', err)
             oAuth2Client.setCredentials(token)
             // Store the token to disk for later use
