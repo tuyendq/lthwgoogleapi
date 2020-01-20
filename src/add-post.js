@@ -85,9 +85,12 @@ const blogger = google.blogger({
     auth: oauth2Client
 })
 
+var blogId = '1256155911765259230'; // LTHWBlogger
+
 async function runSample() {
     const res = await blogger.posts.insert({
-        blogId: '1256155911765259230', // LTHWBlogger
+        // blogId: '1256155911765259230', // LTHWBlogger
+        blogId: blogId,
         requestBody: {
             title: 'New post from nodejs',
             content: '<h3>h3 title'
@@ -101,3 +104,19 @@ const scopes = ['https://www.googleapis.com/auth/blogger','https://www.googleapi
 authenticate(scopes)
     .then(client => runSample(client))
     .catch(console.error)
+
+var postBody = {
+    title: 'Another post from nodejs',
+    isDraft: false,
+    labels: ['James Bond 007'],
+    content: '<img style="display:none;" src="https://i.ytimg.com/vi/BIhNsAtPbPI/hqdefault.jpg" alt="" /><iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/BIhNsAtPbPI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+
+};
+async function addPost(blogId, postParams) {
+    const res = await blogger.posts.insert({
+        blogId: blogId,
+        postParams
+    });
+    con
+
+}
