@@ -8,6 +8,7 @@ const opn = require('open');
 const destroyer = require('server-destroy');
 
 const {google} = require('googleapis');
+
 // const plus = google.plus('v1');
 
 /**
@@ -92,7 +93,7 @@ async function runSample() {
         blogId: blogId,
         requestBody: {
             title: 'New post from nodejs',
-            content: '<h3>h3 title'
+            content: '<h3>h3 title</h3>'
         }
     })
     console.log(res.data)
@@ -108,10 +109,14 @@ async function addPost(blogId, postParams) {
     return res.data;
 }
 
-
+/**
+ * Add posts from array of post objects
+ * @param {string} blogId The BlogID to post to
+ * @param {array} postLists The array of post objects
+ */
 async function addPosts(blogId, postLists) {
     postLists.forEach(element => {
-        console.log(`${element.title}, ${element.labels}, ${element.videoId}`);
+        // console.log(`${element.title}, ${element.labels}, ${element.videoId}`);
         
         let postBody = {
             title: element.title,
@@ -120,6 +125,20 @@ async function addPosts(blogId, postLists) {
             content: '<img style="display:none;" src="https://i.ytimg.com/vi/' + element.videoId + '/hqdefault.jpg" alt="' + element.title + '"/><iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/' + element.videoId + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
         };
         addPost(blogId, postBody);
+    });
+}
+
+async function addPostsYoutubePlaylist(blogId, youtubePlaylist) {
+    youtubePlaylist.forEach(element => {
+        console.log(`${element.title}, ${element.titleChannel}, ${element.resourceId.videoId}`);
+        
+        // let postBody = {
+        //     title: element.title,
+        //     isDraft: false,
+        //     labels: element.labels,
+        //     content: '<img style="display:none;" src="https://i.ytimg.com/vi/' + element.videoId + '/hqdefault.jpg" alt="' + element.title + '"/><iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/' + element.videoId + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+        // };
+        // addPost(blogId, postBody);
     });
 }
 
@@ -136,9 +155,13 @@ var posts = [
     {title:"Ana Vidovic plays Mauro Giuliani Gran Sonata Eroica, Op.150", labels: ["Lisker Music Foundation","Classical Guitar"], videoId: 'E4esey6TqNw'}
     ];
 
+// var playlistFile = 'PLroUsGOhJjhJB1sG1cZDDzDZOJs7rbeTd.json';
+var youtubePlaylist = require('./PLroUsGOhJjhJB1sG1cZDDzDZOJs7rbeTd.json');
+
 const scopes = ['https://www.googleapis.com/auth/blogger','https://www.googleapis.com/auth/plus.me'];
 authenticate(scopes)
     // .then(client => runSample(client)) // Function without parameters - hard code
     // .then(client => addPost(blogId, postBody)) // Function with parameters
-    .then(client => addPosts(blogId, posts))
+    // .then(client => addPosts(blogId, posts)) // Function with parameters - array of post objects
+    .then(client => addPosts(blogId, youtubePlaylist)) // Function with parameters - youtube playlist
     .catch(console.error)
