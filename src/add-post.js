@@ -39,7 +39,8 @@ const oauth2Client = new google.auth.OAuth2(
 google.options({auth: oauth2Client});
 
 /**
- * Open an http server to accept the oauth callback. In this simple example, the only request to our webserver is to /callback?code=<code>
+ * Open an http server to accept the oauth callback.
+ * In this simple example, the only request to our webserver is to /callback?code=<code>
  */
 async function authenticate(scopes){
     return new Promise((resolve, reject) => {
@@ -85,8 +86,6 @@ const blogger = google.blogger({
     auth: oauth2Client
 })
 
-var blogId = '1256155911765259230'; // LTHWBlogger
-
 async function runSample() {
     const res = await blogger.posts.insert({
         // blogId: '1256155911765259230', // LTHWBlogger
@@ -100,23 +99,46 @@ async function runSample() {
     return res.data
 }
 
-const scopes = ['https://www.googleapis.com/auth/blogger','https://www.googleapis.com/auth/plus.me'];
-authenticate(scopes)
-    .then(client => runSample(client))
-    .catch(console.error)
-
-var postBody = {
-    title: 'Another post from nodejs',
-    isDraft: false,
-    labels: ['James Bond 007'],
-    content: '<img style="display:none;" src="https://i.ytimg.com/vi/BIhNsAtPbPI/hqdefault.jpg" alt="" /><iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/BIhNsAtPbPI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
-
-};
 async function addPost(blogId, postParams) {
     const res = await blogger.posts.insert({
         blogId: blogId,
-        postParams
+        requestBody: postParams
     });
-    con
-
+    console.log(res.data);
+    return res.data;
 }
+
+
+async function addPosts(blogId, postLists) {
+    postLists.forEach(element => {
+        console.log(`${element.title}, ${element.labels}, ${element.videoId}`);
+        
+        let postBody = {
+            title: element.title,
+            isDraft: false,
+            labels: element.labels,
+            content: '<img style="display:none;" src="https://i.ytimg.com/vi/' + element.videoId + '/hqdefault.jpg" alt="' + element.title + '"/><iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/' + element.videoId + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+        };
+        addPost(blogId, postBody);
+    });
+}
+
+var blogId = '1256155911765259230'; // LTHWBlogger
+var postBody = {
+    title: 'Autumn Leaves - Yenne Lee plays 2004 Pepe Romero Jr.',
+    isDraft: false,
+    labels: ['Guitar Salon International'],
+    content: '<img style="display:none;" src="https://i.ytimg.com/vi/HxGT5z6d-GA/hqdefault.jpg" alt="" /><iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/HxGT5z6d-GA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+
+};
+var posts = [
+    {title: "Estas Tonne - Perception [ Live in Zurich ]", labels: ["Universal Sounds Switzerland","Music"], videoId: 'Kbkc_0Ns6q0'},
+    {title:"Ana Vidovic plays Mauro Giuliani Gran Sonata Eroica, Op.150", labels: ["Lisker Music Foundation","Classical Guitar"], videoId: 'E4esey6TqNw'}
+    ];
+
+const scopes = ['https://www.googleapis.com/auth/blogger','https://www.googleapis.com/auth/plus.me'];
+authenticate(scopes)
+    // .then(client => runSample(client)) // Function without parameters - hard code
+    // .then(client => addPost(blogId, postBody)) // Function with parameters
+    .then(client => addPosts(blogId, posts))
+    .catch(console.error)
