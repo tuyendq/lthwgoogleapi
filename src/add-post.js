@@ -2,13 +2,13 @@
 
 const fs = require('fs');
 const path = require('path');
-const http = require('http')
-const url = require('url')
-const opn = require('open')
-const destroyer = require('server-destroy')
+const http = require('http');
+const url = require('url');
+const opn = require('open');
+const destroyer = require('server-destroy');
 
-const {google} = require('googleapis')
-const plus = google.plus('v1')
+const {google} = require('googleapis');
+// const plus = google.plus('v1');
 
 /**
  * To use OAuth2 authentication, we need access to a a CLIENT_ID, CLIENT_SECRET, AND REDIRECT_URI.
@@ -28,12 +28,15 @@ const oauth2Client = new google.auth.OAuth2(
     keys.client_id,
     keys.client_secret,
     keys.redirect_uris[0]
-)
+);
 
 /**
-* This is one of the many ways you can configure googleapis to use authentication credentials.  In this method, we're setting a global reference for all APIs.  Any other API you use here, like google.drive('v3'), will now use this auth client. You can also override the auth client at the service and method call levels.
+* This is one of the many ways you can configure googleapis to use authentication credentials.
+* In this method, we're setting a global reference for all APIs.
+* Any other API you use here, like google.drive('v3'), will now use this auth client.
+* You can also override the auth client at the service and method call levels.
 */
-google.options({auth: oauth2Client})
+google.options({auth: oauth2Client});
 
 /**
  * Open an http server to accept the oauth callback. In this simple example, the only request to our webserver is to /callback?code=<code>
@@ -43,8 +46,8 @@ async function authenticate(scopes){
         // grab the url that will be used for authorization
         const authorizeUrl = oauth2Client.generateAuthUrl({
             access_type: 'offline',
-            scope: scopes.join(' '),
-        })
+            scope: scopes.join(' ')
+        });
         const server = http
             .createServer(async (req, res) => {
                 try {
@@ -56,10 +59,10 @@ async function authenticate(scopes){
                         const {tokens} = await oauth2Client.getToken(qs.get('code'))
                         oauth2Client.credentials = tokens
                         resolve(oauth2Client)
-                    } 
+                    }
                 } catch {
                     reject(e)
-                } 
+                }
             })
             .listen(3000, () => {
                 // open browser to the authorize url to start the workflow
