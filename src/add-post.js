@@ -1,7 +1,7 @@
-'use strict'
+'use strict';
 
-const fs = require('fs')
-const path = require('path')
+const fs = require('fs');
+const path = require('path');
 const http = require('http')
 const url = require('url')
 const opn = require('open')
@@ -11,13 +11,14 @@ const {google} = require('googleapis')
 const plus = google.plus('v1')
 
 /**
- * To use OAuth2 authentication, we need access to a a CLIENT_ID, CLIENT_SECRET, AND REDIRECT_URI.  To get these credentials for your application, visit https://console.cloud.google.com/apis/credentials.
+ * To use OAuth2 authentication, we need access to a a CLIENT_ID, CLIENT_SECRET, AND REDIRECT_URI.
+ * To get these credentials for your application, visit https://console.cloud.google.com/apis/credentials.
  */
-const keyPath = path.join(__dirname, 'oauth2.keys.json')
+const keyPath = path.join(__dirname, 'oauth2.keys.json');
 // console.log(keyPath)
-let keys = {redirect_uris: ['']}
+let keys = {redirect_uris: ['']};
 if (fs.existsSync(keyPath)) {
-    keys = require(keyPath).web
+    keys = require(keyPath).web;
 }
 
 /**
