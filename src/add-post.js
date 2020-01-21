@@ -6,8 +6,13 @@ const http = require('http');
 const url = require('url');
 const opn = require('open');
 const destroyer = require('server-destroy');
+const bottleneck = require('bottleneck');
 
 const {google} = require('googleapis');
+const limiter = new bottleneck({
+    maxConcurrent: 1,
+    minTime: 3000
+});
 
 // const plus = google.plus('v1');
 
@@ -15,8 +20,8 @@ const {google} = require('googleapis');
  * To use OAuth2 authentication, we need access to a a CLIENT_ID, CLIENT_SECRET, AND REDIRECT_URI.
  * To get these credentials for your application, visit https://console.cloud.google.com/apis/credentials.
  */
-const keyPath = path.join(__dirname, 'oauth2.keys.json');
-// console.log(keyPath)
+// const keyPath = path.join(__dirname, 'oauth2.keys.json');
+const keyPath = path.join(__dirname, 'oauth2.keys-learn.practice.share.json');
 let keys = {redirect_uris: ['']};
 if (fs.existsSync(keyPath)) {
     keys = require(keyPath).web;
@@ -62,7 +67,7 @@ async function authenticate(scopes){
                         oauth2Client.credentials = tokens
                         resolve(oauth2Client)
                     }
-                } catch {
+                } catch (e) {
                     reject(e)
                 }
             })
@@ -101,12 +106,15 @@ async function runSample() {
 }
 
 async function addPost(blogId, postParams) {
-    const res = await blogger.posts.insert({
-        blogId: blogId,
-        requestBody: postParams
-    });
-    console.log(res.data);
-    return res.data;
+    try { 
+        const res = await blogger.posts.insert({
+            blogId: blogId,
+            requestBody: postParams
+        });
+        return res.data;
+    } catch(error) {
+        console.error(error);
+    }
 }
 
 /**
@@ -115,34 +123,37 @@ async function addPost(blogId, postParams) {
  * @param {array} postLists The array of post objects
  */
 async function addPosts(blogId, postLists) {
-    postLists.forEach(element => {
-        // console.log(`${element.title}, ${element.labels}, ${element.videoId}`);
-        
+    postLists.forEach(async element => {
         let postBody = {
             title: element.title,
             isDraft: false,
             labels: element.labels,
-            content: '<img style="display:none;" src="https://i.ytimg.com/vi/' + element.videoId + '/hqdefault.jpg" alt="' + element.title + '"/><iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/' + element.videoId + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+            content: '<img style="display:none;" src="https://i.ytimg.com/vi/' + element.videoId + '/hqdefault.jpg" alt="' + element.title + '"/><iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/' + element.videoId + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' + '<p>' + element.description + '</p>'
         };
-        addPost(blogId, postBody);
+        await limiter.schedule(() => addPost(blogId, postBody));
     });
 }
-
+/**
+ * Add posts from extracted Youtube Playlist JSON format
+ * @param {string} blogId 
+ * @param {array} youtubePlaylist 
+ */
 async function addPostsYoutubePlaylist(blogId, youtubePlaylist) {
-    youtubePlaylist.forEach(element => {
-        console.log(`${element.title}, ${element.titleChannel}, ${element.resourceId.videoId}`);
+    youtubePlaylist.forEach(async function(element) {
+        // console.log(`${element.title}, ${element.titleChannel}, ${element.description}, ${element.resourceId.videoId}`);
         
-        // let postBody = {
-        //     title: element.title,
-        //     isDraft: false,
-        //     labels: element.labels,
-        //     content: '<img style="display:none;" src="https://i.ytimg.com/vi/' + element.videoId + '/hqdefault.jpg" alt="' + element.title + '"/><iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/' + element.videoId + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
-        // };
-        // addPost(blogId, postBody);
+        let postBody = {
+            title: element.title,
+            isDraft: false,
+            labels: [element.channelTitle],
+            content: '<img style="display:none;" src="https://i.ytimg.com/vi/' + element.resourceId.videoId + '/hqdefault.jpg" alt="' + element.title + '"/>\n<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/' + element.resourceId.videoId + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' + '\n<p>' + element.description + '</p>'
+        };
+        await limiter.schedule(() => addPost(blogId, postBody));
     });
 }
 
-var blogId = '1256155911765259230'; // LTHWBlogger
+// var blogId = '1256155911765259230'; // LTHWBlogger
+var blogId = '5623266548042579859'; // InJustAMinute
 var postBody = {
     title: 'Autumn Leaves - Yenne Lee plays 2004 Pepe Romero Jr.',
     isDraft: false,
@@ -156,12 +167,14 @@ var posts = [
     ];
 
 // var playlistFile = 'PLroUsGOhJjhJB1sG1cZDDzDZOJs7rbeTd.json';
-var youtubePlaylist = require('./PLroUsGOhJjhJB1sG1cZDDzDZOJs7rbeTd.json');
+var youtubePlaylist = require('./PLcetZ6gSk96_Fprtuj6gKN9upPjaDrARH.json'); // BBC Learning English - English in a minute
 
 const scopes = ['https://www.googleapis.com/auth/blogger','https://www.googleapis.com/auth/plus.me'];
 authenticate(scopes)
     // .then(client => runSample(client)) // Function without parameters - hard code
     // .then(client => addPost(blogId, postBody)) // Function with parameters
     // .then(client => addPosts(blogId, posts)) // Function with parameters - array of post objects
-    .then(client => addPosts(blogId, youtubePlaylist)) // Function with parameters - youtube playlist
-    .catch(console.error)
+    // .then(client => addPostsYoutubePlaylist(blogId, youtubePlaylist)) // Function with parameters - youtube playlist
+    .then(async function(client) { 
+        await addPostsYoutubePlaylist(blogId, youtubePlaylist)}) // Function with parameters - youtube playlist
+    .catch(error => console.error(error))
