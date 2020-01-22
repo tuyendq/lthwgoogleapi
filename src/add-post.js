@@ -14,6 +14,11 @@ const limiter = new bottleneck({
     minTime: 3000
 });
 
+function sleep(ms) {
+    return new Promise((resolve => {
+        setTimeout(resolve, ms);
+    }));
+}
 // const plus = google.plus('v1');
 
 /**
@@ -139,16 +144,19 @@ async function addPosts(blogId, postLists) {
  * @param {array} youtubePlaylist 
  */
 async function addPostsYoutubePlaylist(blogId, youtubePlaylist) {
-    youtubePlaylist.forEach(async function(element) {
+    for (let i = youtubePlaylist.length - 1; i > -1; i--) {
         let postBody = {
-            title: element.title,
+            title: youtubePlaylist[i].title,
             isDraft: false,
-            labels: [element.channelTitle],
-            content: '<img style="display:none;" src="https://i.ytimg.com/vi/' + element.resourceId.videoId + '/hqdefault.jpg" alt="' + element.title + '"/>\n<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/' + element.resourceId.videoId + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' + '\n<p>' + element.description + '</p>'
+            labels: [youtubePlaylist[i].channelTitle],
+            content: '<img style="display:none;" src="https://i.ytimg.com/vi/' + youtubePlaylist[i].resourceId.videoId + '/hqdefault.jpg" alt="' + youtubePlaylist[i].title + '"/>\n<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/' + youtubePlaylist[i].resourceId.videoId + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' + '\n<p>' + youtubePlaylist[i].description + '</p>'
         };
-        await limiter.schedule(() => addPost(blogId, postBody));
-    });
+        console.log(`${youtubePlaylist[i].position}. ${youtubePlaylist[i].title}`);
+        addPost(blogId, postBody);
+        await sleep(5000);
+    }
 }
+
 
 // var blogId = '1256155911765259230'; // LTHWBlogger
 var blogId = '5623266548042579859'; // InJustAMinute
@@ -173,6 +181,6 @@ authenticate(scopes)
     // .then(client => addPost(blogId, postBody)) // Function with parameters
     // .then(client => addPosts(blogId, posts)) // Function with parameters - array of post objects
     // .then(client => addPostsYoutubePlaylist(blogId, youtubePlaylist)) // Function with parameters - youtube playlist
-    .then(async function(client) { 
-        await addPostsYoutubePlaylist(blogId, youtubePlaylist)}) // Function with parameters - youtube playlist
+    .then((client) => { 
+        addPostsYoutubePlaylist(blogId, youtubePlaylist)}) // Function with parameters - youtube playlist
     .catch(error => console.error(error))
