@@ -61,11 +61,11 @@ async function authenticate(scopes){
                     if (req.url.indexOf('/oauth2callback') > -1) {
                         const qs = new url.URL(req.url, 'http://localhost:3000')
                             .searchParams
-                        res.end('Authentication successfully! Please return to the console.')
-                        server.destroy()
-                        const {tokens} = await oauth2Client.getToken(qs.get('code'))
-                        oauth2Client.credentials = tokens
-                        resolve(oauth2Client)
+                        res.end('Authentication successfully! Please return to the console.');
+                        server.destroy();
+                        const {tokens} = await oauth2Client.getToken(qs.get('code'));
+                        oauth2Client.credentials = tokens;
+                        resolve(oauth2Client);
                     }
                 } catch (e) {
                     reject(e)
@@ -73,9 +73,9 @@ async function authenticate(scopes){
             })
             .listen(3000, () => {
                 // open browser to the authorize url to start the workflow
-                opn(authorizeUrl, {wait: false}).then(cp => cp.unref())
+                opn(authorizeUrl, {wait: false}).then(cp => cp.unref());
             })
-        destroyer(server)
+        destroyer(server);
     })
 }
 
@@ -90,7 +90,7 @@ async function runSample()  {
 const blogger = google.blogger({
     version: 'v3',
     auth: oauth2Client
-})
+});
 
 async function runSample() {
     const res = await blogger.posts.insert({
@@ -140,8 +140,6 @@ async function addPosts(blogId, postLists) {
  */
 async function addPostsYoutubePlaylist(blogId, youtubePlaylist) {
     youtubePlaylist.forEach(async function(element) {
-        // console.log(`${element.title}, ${element.titleChannel}, ${element.description}, ${element.resourceId.videoId}`);
-        
         let postBody = {
             title: element.title,
             isDraft: false,
