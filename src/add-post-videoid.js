@@ -14,7 +14,7 @@ const youtube = google.youtube({
 
 const oauth2Client = new google.auth.OAuth2(
     process.env.OAUTH_CLIENT_ID,
-    process.env.OAUTH_CLIENT_SECRECT,
+    process.env.OAUTH_CLIENT_SECRET,
     process.env.OAUTH_REDIRECT_URI
 );
 const blogger = google.blogger({
@@ -52,7 +52,7 @@ async function authenticate(scopes){
                     reject(e);
                 }
             })
-            .listen(3000, () => {
+            .listen(process.env.PORT || 3000, () => {
                 // open browser to authorize url
                 opn(authorizeUrl, {wait: false}).then(cp => cp.unref());
             })
@@ -61,9 +61,9 @@ async function authenticate(scopes){
 }
 
 // Get video info based on videoId
-var labels = ['Classical Music', 'Guitar'];
-var videoId = process.argv[2] || 'Ks-_Mh1QhMc';
-var blogId = process.argv[3] || '1256155911765259230'; // LTHWBlogger
+var blogId = process.argv[2] || '1256155911765259230'; // LTHWBlogger // 5623266548042579859;//injustoneminute
+var videoId = process.argv[3] || 'Ks-_Mh1QhMc';
+var labels = [process.argv[4]] || [];
 console.log(`Getting video info: ${videoId}`);
 
 const params = {
@@ -75,9 +75,10 @@ const params = {
 var videoItem = {};
 youtube.videos.list(params, function (err, res) {
     if (err) {
-        console.error(`Error occured:\n ${err}`); 
+        console.error(`Error occured:\n ${err}`);
     }
-    console.log(`Result: ${JSON.stringify(res.data.items[0])}`);
+    // troubleshoot
+    // console.log(`Result: ${JSON.stringify(res.data.items[0])}`);
     videoItem = res.data.items[0];
     let postBody = {
         title: videoItem.snippet.title,
@@ -85,20 +86,21 @@ youtube.videos.list(params, function (err, res) {
         labels: labels.concat([videoItem.snippet.channelTitle]),
         content: '<img style="display:none;" src="https://i.ytimg.com/vi/' + videoItem.id + '/hqdefault.jpg" alt="' + videoItem.snippet.title + '"/>\n<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/' + videoItem.id + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>\n' + '<p>' + videoItem.snippet.description + '</p>'
     };
-    // Insert blogger post 
+    // Insert blogger post
     authenticate(scopes)
         .then(client => {
             // console.log(`Returned client: ${JSON.stringify(client)}`);
             insertPost(blogId, postBody);
         })
-        .catch(error => console.error(error))
+        .catch(error => console.error(`Authenticate error occured: ${error}`))
 });
 
-(async function getVideoInfo() {
-    console.log(`---Begin:\n${JSON.stringify(videoItem)}`);
-    await sleep(3000);
-    console.log(`---/After:\n${JSON.stringify(videoItem)}`);
-})();
+// For troubleshoot
+// (async function getVideoInfo() {
+//     console.log(`---Begin:\n${JSON.stringify(videoItem)}`);
+//     await sleep(3000);
+//     console.log(`---/After:\n${JSON.stringify(videoItem)}`);
+// })();
 
 function sleep(ms) {
     return new Promise(resolve => {
@@ -110,6 +112,11 @@ async function insertPost(blogId, postBody) {
     const res = await blogger.posts.insert({
         blogId: blogId,
         requestBody: postBody
+    },(err, res) => {
+        if (err) {
+            console.error(`Insert post error:\n${err}`);
+        }
+        console.log(`Insert post successfully:\nPost id: ${res.data.id}\nPost URL: ${res.data.url}\nPost title: ${res.data.title}`);
     });
-    return res.data;
+    return res;
 }

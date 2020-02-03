@@ -108,5 +108,6 @@ dist
 
 
 oauth2.keys*.json
+oauth2.*.keys.json
 credentials.json
 token.json

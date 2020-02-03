@@ -1,0 +1,81 @@
+{
+    "config": {
+        "url": "https://www.googleapis.com/blogger/v3/blogs/5623266548042579859/posts",
+        "method": "POST",
+        "data": {
+            "title": "How to write 期 (qī) – period (of time) – stroke order, radical, examples and spoken audio",
+            "isDraft": false,
+            "labels": [
+                "HSK Level 1",
+                "trainchinese"
+            ],
+            "content": "<img style=\"display:none;\" src=\"https://i.ytimg.com/vi/Bucz_-Ne4cE/hqdefault.jpg\" alt=\"How to write 期 (qī) – period (of time) – stroke order, radical, examples and spoken audio\"/>\n<iframe width=\"560\" height=\"315\" src=\"https://www.youtube-nocookie.com/embed/Bucz_-Ne4cE\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>\n<p>Learn how to write 期. 期 (qī) is a Chinese character meaning \"period (of time)\". You can learn it at http://www.trainchinese.com or in our apps – just search \"trainchinese\" in the iOS or Android app stores. This character is frequently used in Mandarin Chinese. It's from Revised HSK Level 1, learned by beginners.\n\nIn this video you'll find out how to write it, which radical it uses and what components the character is made up of. You can also hear how it's pronounced with standard Mandarin spoken audio and both see and hear examples of how it's used.</p>"
+        },
+        "headers": {
+            "x-goog-api-client": "gdcl/3.2.0 gl-node/12.13.1 auth/5.8.0",
+            "Accept-Encoding": "gzip",
+            "User-Agent": "google-api-nodejs-client/3.2.0 (gzip)",
+            "Authorization": "Bearer ya29.Il-8B9DXTGUk9lH5MawRb1y-V6T7DVENg10VfhGI0BcG595h-MV643GToPuZFvlFS7EAGbPhtl8Zne7GntibvQYLomlIgWmSXViF5WTPcBd6Rw5uBiIjP13SY_2_VW7Tig",
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        "params": {},
+        "retry": true,
+        "body": "{\"title\":\"How to write 期 (qī) – period (of time) – stroke order, radical, examples and spoken audio\",\"isDraft\":false,\"labels\":[\"HSK Level 1\",\"trainchinese\"],\"content\":\"<img style=\\\"display:none;\\\" src=\\\"https://i.ytimg.com/vi/Bucz_-Ne4cE/hqdefault.jpg\\\" alt=\\\"How to write 期 (qī) – period (of time) – stroke order, radical, examples and spoken audio\\\"/>\\n<iframe width=\\\"560\\\" height=\\\"315\\\" src=\\\"https://www.youtube-nocookie.com/embed/Bucz_-Ne4cE\\\" frameborder=\\\"0\\\" allow=\\\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\\\" allowfullscreen></iframe>\\n<p>Learn how to write 期. 期 (qī) is a Chinese character meaning \\\"period (of time)\\\". You can learn it at http://www.trainchinese.com or in our apps – just search \\\"trainchinese\\\" in the iOS or Android app stores. This character is frequently used in Mandarin Chinese. It's from Revised HSK Level 1, learned by beginners.\\n\\nIn this video you'll find out how to write it, which radical it uses and what components the character is made up of. You can also hear how it's pronounced with standard Mandarin spoken audio and both see and hear examples of how it's used.</p>\"}",
+        "responseType": "json"
+    },
+    "data": {
+        "kind": "blogger#post",
+        "id": "2502604518894630469",
+        "blog": {
+            "id": "5623266548042579859"
+        },
+        "published": "2020-02-03T04:04:00-08:00",
+        "updated": "2020-02-03T04:04:00-08:00",
+        "etag": "\"dGltZXN0YW1wOiAxNTgwNzMxNDQwNzY5Cm9mZnNldDogLTI4ODAwMDAwCg\"",
+        "url": "http://injustoneminute.blogspot.com/2020/02/how-to-write-qi-period-of-time-stroke.html",
+        "selfLink": "https://www.googleapis.com/blogger/v3/blogs/5623266548042579859/posts/2502604518894630469",
+        "title": "How to write 期 (qī) – period (of time) – stroke order, radical, examples and spoken audio",
+        "content": "<img style=\"display:none;\" src=\"https://i.ytimg.com/vi/Bucz_-Ne4cE/hqdefault.jpg\" alt=\"How to write 期 (qī) – period (of time) – stroke order, radical, examples and spoken audio\"/>\n<iframe width=\"560\" height=\"315\" src=\"https://www.youtube-nocookie.com/embed/Bucz_-Ne4cE\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>\n<p>Learn how to write 期. 期 (qī) is a Chinese character meaning \"period (of time)\". You can learn it at http://www.trainchinese.com or in our apps – just search \"trainchinese\" in the iOS or Android app stores. This character is frequently used in Mandarin Chinese. It's from Revised HSK Level 1, learned by beginners.\n\nIn this video you'll find out how to write it, which radical it uses and what components the character is made up of. You can also hear how it's pronounced with standard Mandarin spoken audio and both see and hear examples of how it's used.</p>",
+        "author": {
+            "id": "18017798749890855649",
+            "displayName": "Practice Habits",
+            "url": "https://www.blogger.com/profile/18017798749890855649",
+            "image": {
+                "url": "//lh3.googleusercontent.com/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA=s35"
+            }
+        },
+        "replies": {
+            "totalItems": "0",
+            "selfLink": "https://www.googleapis.com/blogger/v3/blogs/5623266548042579859/posts/2502604518894630469/comments"
+        },
+        "labels": [
+            "HSK Level 1",
+            "trainchinese"
+        ],
+        "status": "LIVE",
+        "readerComments": "DONT_ALLOW_HIDE_EXISTING"
+    },
+    "headers": {
+        "alt-svc": "quic=\":443\"; ma=2592000; v=\"46,43\",h3-Q050=\":443\"; ma=2592000,h3-Q049=\":443\"; ma=2592000,h3-Q048=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000",
+        "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+        "connection": "close",
+        "content-encoding": "gzip",
+        "content-type": "application/json; charset=UTF-8",
+        "date": "Mon, 03 Feb 2020 12:04:01 GMT",
+        "etag": "\"dGltZXN0YW1wOiAxNTgwNzMxNDQwNzY5Cm9mZnNldDogLTI4ODAwMDAwCg\"",
+        "expires": "Mon, 01 Jan 1990 00:00:00 GMT",
+        "pragma": "no-cache",
+        "server": "GSE",
+        "transfer-encoding": "chunked",
+        "vary": "Origin, X-Origin",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-xss-protection": "1; mode=block"
+    },
+    "status": 200,
+    "statusText": "OK",
+    "request": {
+        "responseURL": "https://www.googleapis.com/blogger/v3/blogs/5623266548042579859/posts"
+    }
+}
