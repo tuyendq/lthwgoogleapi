@@ -97,6 +97,10 @@ const blogger = google.blogger({
     auth: oauth2Client
 });
 
+/**
+ * Insert post directly
+ * Hard coded blogId, requestBody to test
+ */
 async function insertPost() {
     const res = await blogger.posts.insert({
         // blogId: '1256155911765259230', // LTHWBlogger
@@ -114,8 +118,12 @@ async function addPost(blogId, postParams) {
         const res = await blogger.posts.insert({
             blogId: blogId,
             requestBody: postParams
+        }, function(err, res) {
+            if (err) {
+                console.error(`Insert post error occured:\n${err}`);
+            }
+            console.log(`Insert post successfully:\nPost id: ${res.data.id}\nPost URL: ${res.data.url}\nPost title: ${res.data.title}`);
         });
-        return res.data;
 }
 
 /**
@@ -140,13 +148,12 @@ async function addPosts(blogId, postLists) {
  * @param {array} youtubePlaylist 
  */
 async function addPostsYoutubePlaylist(blogId, youtubePlaylist) {
-    var prevPost = {};
     // Add post from top to bottom
     // for (let i = 0; i < youtubePlaylist.length; i++) {
     // Add post from bottom up
     var otherLabels = [];
-    if (process.argv[3]) {
-        otherLabels.concat([process.argv[3]]);
+    if (process.argv[4]) {
+        otherLabels.concat([process.argv[4]]);
     }
     var labels = [youtubePlaylist[0].channelTitle];
     if (otherLabels.length > 0) {
@@ -160,9 +167,9 @@ async function addPostsYoutubePlaylist(blogId, youtubePlaylist) {
             content: '<img style="display:none;" src="https://i.ytimg.com/vi/' + youtubePlaylist[i].resourceId.videoId + '/hqdefault.jpg" alt="' + youtubePlaylist[i].title + '"/>\n<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/' + youtubePlaylist[i].resourceId.videoId + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' + '\n<p>' + youtubePlaylist[i].description + '</p>'
         };
         console.log(`${youtubePlaylist[i].position}. ${youtubePlaylist[i].title}`);
-        prevPost = addPost(blogId, postBody);
+        addPost(blogId, postBody);
         await sleep(5000);
-        console.log(`Added post: ${prevPost.position}. ${prevPost.title}: ${prevPost.url}`);
+        // console.log(`Added post: ${prevPost.position}. ${prevPost.title}: ${prevPost.url}`);
     }
 }
 
@@ -178,13 +185,13 @@ var posts = [
     {title:"Ana Vidovic plays Mauro Giuliani Gran Sonata Eroica, Op.150", labels: ["Lisker Music Foundation","Classical Guitar"], videoId: 'E4esey6TqNw'}
     ];
 
-var jsonFilename = process.argv[2];
+var jsonFilename = process.argv[3];
 // var youtubePlaylist = require('./PLd9hCvj34W5hJZwjdghwQQi3XhpSZO9sx-voa-eim.json'); // VOA Learning English - English in a minute
 // var youtubePlaylist = require('./PLFJllnczPkIR0i7SNYgg7_Pd8YG9UcW0w-hsk-level-1.json'); // HSK Level 1 - trainchinese
 var youtubePlaylist = require(jsonFilename);
 
 // var blogId = '1256155911765259230'; // LTHWBlogger
-var blogId = '5623266548042579859'; // InJustOneMinute
+var blogId = process.argv[2] ; '5623266548042579859'; // InJustOneMinute
 
 const scopes = ['https://www.googleapis.com/auth/blogger','https://www.googleapis.com/auth/plus.me'];
 authenticate(scopes)
