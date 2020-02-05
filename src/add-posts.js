@@ -1,3 +1,6 @@
+/**
+ * Usage: node add-posts.js blogId youtubeplaylistJsonFilePath "label1, label2"
+ */
 'use strict';
 
 const fs = require('fs');
@@ -6,20 +9,14 @@ const http = require('http');
 const url = require('url');
 const opn = require('open');
 const destroyer = require('server-destroy');
-const bottleneck = require('bottleneck');
 
 const {google} = require('googleapis');
-const limiter = new bottleneck({
-    maxConcurrent: 1,
-    minTime: 3000
-});
 
 function sleep(ms) {
     return new Promise((resolve => {
         setTimeout(resolve, ms);
     }));
 }
-// const plus = google.plus('v1');
 
 /**
  * To use OAuth2 authentication, we need access to a a CLIENT_ID, CLIENT_SECRET, AND REDIRECT_URI.
@@ -84,34 +81,29 @@ async function authenticate(scopes){
     })
 }
 
-/*
-async function runSample()  {
-    // retrieve user profile
-    const res = await plus.people.get({userId: 'me'})
-    console.log(res.data)
-}
-*/
-
 const blogger = google.blogger({
     version: 'v3',
     auth: oauth2Client
 });
 
 /**
- * Insert post directly
- * Hard coded blogId, requestBody to test
+ * Insert post directly: hard coded blogId, requestBody to test
  */
 async function insertPost() {
     const res = await blogger.posts.insert({
         // blogId: '1256155911765259230', // LTHWBlogger
         blogId: blogId,
         requestBody: {
-            title: 'New post from nodejs',
+            title: 'New post inserted from nodejs',
             content: '<h3>h3 title</h3>'
         }
+    }, function(err, res) {
+        if (err) {
+            console.error(err);
+        }
+        console.log(res.data);
+        return res.data;
     })
-    console.log(res.data)
-    return res.data
 }
 
 async function addPost(blogId, postParams) {  
@@ -139,7 +131,7 @@ async function addPosts(blogId, postLists) {
             labels: element.labels,
             content: '<img style="display:none;" src="https://i.ytimg.com/vi/' + element.videoId + '/hqdefault.jpg" alt="' + element.title + '"/><iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/' + element.videoId + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' + '<p>' + element.description + '</p>'
         };
-        await limiter.schedule(() => addPost(blogId, postBody));
+        addPost(blogId, postBody);
     });
 }
 /**
@@ -151,25 +143,34 @@ async function addPostsYoutubePlaylist(blogId, youtubePlaylist) {
     // Add post from top to bottom
     // for (let i = 0; i < youtubePlaylist.length; i++) {
     // Add post from bottom up
-    var otherLabels = [];
-    if (process.argv[4]) {
-        otherLabels.concat([process.argv[4]]);
-    }
-    var labels = [youtubePlaylist[0].channelTitle];
-    if (otherLabels.length > 0) {
-        labels = labels.concat(otherLabels);
-    }
-    for (let i = youtubePlaylist.length - 1; i > -1; i--) {
+    var otherLabels = [process.argv[4]] || [];
+    console.log(`Argv4 is: ${process.argv[4]}`);
+    console.log(`otherLabels is: ${otherLabels}`);
+    // if (process.argv[4]) {
+    //     otherLabels.concat([process.argv[4]]);
+    //     console.log(process.argv[4]);
+    //     console.log(otherLabels);
+    // }
+    var labels = [youtubePlaylist[0].channelTitle].concat(otherLabels);
+    console.log(`Final labels is: ${labels}`);
+    // if (otherLabels.length > 0) {
+    //     labels = labels.concat(otherLabels);
+    //     console.log(labels);
+    // }
+
+    var titleSuffix = 'Season 1 - #';
+    var totalClips = youtubePlaylist.length;
+    // for (let i = youtubePlaylist.length - 1; i > -1; i--) { // add from bottom up
+    for (let i = 0; i < youtubePlaylist.length; i++) { // add from top down
         let postBody = {
-            title: youtubePlaylist[i].title,
+            title: youtubePlaylist[i].title + ' - ' + titleSuffix + (i+1) + '/' + totalClips,
             isDraft: false,
             labels: labels,
             content: '<img style="display:none;" src="https://i.ytimg.com/vi/' + youtubePlaylist[i].resourceId.videoId + '/hqdefault.jpg" alt="' + youtubePlaylist[i].title + '"/>\n<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/' + youtubePlaylist[i].resourceId.videoId + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' + '\n<p>' + youtubePlaylist[i].description + '</p>'
         };
         console.log(`${youtubePlaylist[i].position}. ${youtubePlaylist[i].title}`);
         addPost(blogId, postBody);
-        await sleep(5000);
-        // console.log(`Added post: ${prevPost.position}. ${prevPost.title}: ${prevPost.url}`);
+        await sleep(10000); // in miliseconds
     }
 }
 
@@ -185,15 +186,13 @@ var posts = [
     {title:"Ana Vidovic plays Mauro Giuliani Gran Sonata Eroica, Op.150", labels: ["Lisker Music Foundation","Classical Guitar"], videoId: 'E4esey6TqNw'}
     ];
 
-var jsonFilename = process.argv[3];
-// var youtubePlaylist = require('./PLd9hCvj34W5hJZwjdghwQQi3XhpSZO9sx-voa-eim.json'); // VOA Learning English - English in a minute
-// var youtubePlaylist = require('./PLFJllnczPkIR0i7SNYgg7_Pd8YG9UcW0w-hsk-level-1.json'); // HSK Level 1 - trainchinese
-var youtubePlaylist = require(jsonFilename);
+var jsonFilepath = process.argv[3];
+var youtubePlaylist = require(jsonFilepath);
 
 // var blogId = '1256155911765259230'; // LTHWBlogger
 var blogId = process.argv[2] ; '5623266548042579859'; // InJustOneMinute
 
-const scopes = ['https://www.googleapis.com/auth/blogger','https://www.googleapis.com/auth/plus.me'];
+const scopes = ['https://www.googleapis.com/auth/blogger'];
 authenticate(scopes)
     // .then(client => runSample(client)) // Function without parameters - hard code
     // .then(client => addPost(blogId, postBody)) // Function with parameters
